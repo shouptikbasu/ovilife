@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ovi Life</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+  }
+  .container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  .result-box {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 style="text-align: center;">Ovi Life</h1>
+  <p style="text-align: center; margin-bottom: 20px;">This application calculates survival outcomes for Cytoreductive Surgery in Carcinoma Ovary</p>
+  <form id="survivalForm">
+    <div style="margin-bottom: 10px;">
+      <label for="age">Age (Years):</label><br>
+      <input type="number" id="age" name="age" required>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="comorbidities">Number of Comorbidities:</label><br>
+      <select id="comorbidities" name="comorbidities" required>
+        <option value="None">None</option>
+        <option value="One">One</option>
+        <option value="More than 1">More than 1</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="ca125">Post Surgery and Adjuvant CA125 (U/ml):</label><br>
+      <input type="number" id="ca125" name="ca125" required>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label for="hipec">HIPEC Given:</label><br>
+      <select id="hipec" name="hipec" required>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+      <label for="cytoreduction">Type of Cytoreduction:</label><br>
+      <select id="cytoreduction" name="cytoreduction" required>
+        <option value="Upfront">Upfront</option>
+        <option value="Interval">Interval</option>
+        <option value="Recurrent">Recurrent</option>
+      </select>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+      <label for="time">Survival Time:</label><br>
+      <select id="time" name="time" required>
+        <option value="12">12 months</option>
+        <option value="24">24 months</option>
+        <option value="36">36 months</option>
+        <option value="48">48 months</option>
+      </select>
+    </div>
+    
+    <button type="submit" style="display: block; margin: 0 auto;">Calculate Probability</button>
+  </form>
+  
+  <div class="result-box" id="conditionalResults"></div>
+  <div class="result-box" id="result"></div>
+  <div class="result-box" id="diseaseFreeSurvival"></div>
+
+  <div style="text-align: center; margin-top: 20px;">
+    <p>Developed by Dr. Shouptik Basu &copy; 2024</p>
+  </div>
+</div>
+
+<script>
+document.getElementById('survivalForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var age = parseInt(document.getElementById('age').value);
+  var comorbidities = document.getElementById('comorbidities').value;
+  var ca125 = parseInt(document.getElementById('ca125').value);
+  var hipec = document.getElementById('hipec').value;
+  var cytoreduction = document.getElementById('cytoreduction').value;
+
+  // Display conditional results
+  var conditionalResults = "";
+  if (age > 60) {
+    conditionalResults += "Review with Geriatric Medicine as old age may affect survival<br>";
+  }
+  if (comorbidities === "One" || comorbidities === "More than 1") {
+    conditionalResults += "Consult your concerned doctor as comorbidity may affect survival<br>";
+  }
+  if (ca125 > 35) {
+    conditionalResults += "Screen for recurrence as CA 125 is high";
+  }
+
+  document.getElementById('conditionalResults').innerHTML = conditionalResults;
+
+  // Calculate disease-free survival time based on provided data
+  var survivalTime;
+  if (cytoreduction === "Upfront") {
+    survivalTime = (hipec === "Yes") ? 41 : 33;
+  } else if (cytoreduction === "Interval") {
+    survivalTime = (hipec === "Yes") ? 45 : 36; // Updated values
+  } else if (cytoreduction === "Recurrent") {
+    survivalTime = (hipec === "Yes") ? 23 : 14;
+  }
+
+  // Calculate the disease-free survival percentage at the selected time
+  var time = parseInt(document.getElementById('time').value);
+  var percentage = (survivalTime >= time) ? 100 : (survivalTime / time) * 100;
+
+  document.getElementById('result').innerHTML = "<div style='text-align: center;'>Disease-Free Survival probability at " + time + " months: " + percentage.toFixed(2) + "%</div>";
+
+  document.getElementById('diseaseFreeSurvival').innerHTML = "<div style='text-align: center;'>Disease-Free Survival time: " + survivalTime + " months</div>";
+});
+</script>
+</body>
+</html>
